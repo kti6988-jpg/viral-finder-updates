@@ -43,7 +43,7 @@ footer{max-width:1500px;margin:0 auto;padding:0 24px 24px;color:var(--muted);fon
 <header>
  <div class="brand"><div class="logo">🔥</div><div><h1>VIRAL FINDER</h1><p>YOUTUBE GLOBAL CONTENT DISCOVERY · 로컬 브라우저 앱</p></div></div>
  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-  <span class="pill" id="versionPill">v1.8.2</span>
+  <span class="pill" id="versionPill">v2.0.0</span>
   <button class="secondary" id="checkUpdateBtn" style="font-size:12px">새 버전 확인</button>
   <button class="primary" id="applyUpdateBtn" style="width:auto;margin:0;font-size:12px" disabled>새 버전 적용</button>
  </div>
@@ -52,9 +52,7 @@ footer{max-width:1500px;margin:0 auto;padding:0 24px 24px;color:var(--muted);fon
 <aside>
  <section class="panel">
   <h2>🔎 영상 발굴 설정</h2>
-  <label>YouTube Data API 키</label>
-  <input id="apiKey" type="password" placeholder="AIza... API 키 입력">
-  <div class="hint">키는 이 브라우저의 로컬 저장소에만 보관되며 Google YouTube API 요청에만 사용됩니다.</div>
+  <label>검색 방식</label><div class="status" style="margin:5px 0">로컬 yt-dlp 검색 · YouTube Data API 키 불필요</div><div class="hint">PC의 로컬 검색 엔진이 YouTube 공개 검색 결과와 영상 메타데이터를 수집합니다. 조회수·길이 중심으로 선별하며 좋아요·댓글·구독자 수는 제공되지 않을 수 있습니다.</div>
   <label>검색어 / 소재</label>
   <input id="query" value="" placeholder="선택 입력 · 예: 반전 실화, 심리학, 돈 관련 이야기">
   <label>조사 국가</label>
@@ -73,8 +71,8 @@ footer{max-width:1500px;margin:0 auto;padding:0 24px 24px;color:var(--muted);fon
   <select id="period"><option value="all">전체 기간</option><option value="year">최근 1년</option><option value="month">최근 30일</option><option value="week">최근 7일</option></select>
   <label>검색 결과 수 (검색어별)</label>
   <select id="maxResults"><option>10</option><option selected>25</option><option>50</option></select>
-  <button class="primary" id="searchBtn">🚀 YouTube 영상 발굴</button>
-  <div class="hint">검색은 국가별 YouTube 검색 결과를 조회수순으로 가져온 뒤 실제 통계를 확인해 기준 미달 영상을 제외합니다.</div>
+  <button class="primary" id="searchBtn">🚀 API 없이 영상 발굴</button>
+  <div class="hint">검색은 로컬 yt-dlp 엔진을 사용합니다. Google API 키와 일일 Search Queries 할당량을 사용하지 않습니다.</div>
  </section>
  <section class="panel" style="margin-top:14px">
   <h2>🔑 API 키 발급 방법</h2>
@@ -108,16 +106,16 @@ footer{max-width:1500px;margin:0 auto;padding:0 24px 24px;color:var(--muted);fon
   <div class="status" id="status">API 키를 입력하고 'YouTube 영상 발굴'을 눌러 시작하세요. 실제 영상 통계만 표시합니다.</div>
   <div class="grid" id="results"><div class="empty" style="grid-column:1/-1">아직 검색 결과가 없습니다.<br>API 키를 등록하면 실제 YouTube 영상 후보를 가져옵니다.</div></div>
  </div>
- <div class="status" id="updateStatus" style="margin-top:14px">업데이트 확인 전 · 현재 버전 v1.4.1</div>
+ <div class="status" id="updateStatus" style="margin-top:14px">업데이트 확인 전 · 현재 버전 v2.0.0</div>
  <div class="hint" style="margin:12px 2px">주의: 국가 코드는 해당 국가에서 검색되는 영상의 기준이지 채널 운영자의 국적을 보증하지 않습니다. 진행자 설명·인터뷰형 제목을 강하게 제외하고 현장·실험·행동 단서가 있는 영상을 우선합니다. 공개 API만으로 영상 전체 화면을 분석할 수는 없어 제목·설명 기반 사전 선별입니다.</div>
 </section>
 </main>
-<footer>VIRAL FINDER · 모든 결과와 저장 목록은 현재 PC 브라우저에 보관됩니다. 조회수·좋아요·댓글은 YouTube Data API가 반환한 값이며 공유 수는 공개 API에서 제공되지 않아 표시하지 않습니다.</footer>
+<footer>VIRAL FINDER · 모든 결과와 저장 목록은 현재 PC 브라우저에 보관됩니다. 조회수·좋아요·댓글은 로컬 yt-dlp가 수집한 공개 메타데이터입니다. 일부 통계는 제공되지 않을 수 있습니다.</footer>
 <script>
 const $=id=>document.getElementById(id);
 let videos=[], saved=JSON.parse(localStorage.getItem('vf_saved')||'[]');
 let activePreview=null, activeStart=0;
-$('apiKey').value=localStorage.getItem('vf_api_key')||'';
+
 const queryPacks={
 US:{all:['true story unbelievable life lesson','psychology human behavior relationship facts','money mistakes financial lessons surprising facts','shocking facts science everyday life'],story:['true story unbelievable real life twist','emotional true story life lesson','survival story shocking real event'],news:['unusual real event explained','social experiment public reaction','important news story explained'],relationship:['relationship psychology signs human behavior','dating relationship mistakes psychology','toxic behavior red flags explained'],money:['money mistakes middle class financial lessons','personal finance surprising facts','saving money habits wealthy people'],facts:['science facts everyday things explained','mystery facts human body psychology','things most people do not know explained'],beauty:['skin care science myths explained','health habits evidence based tips','fashion mistakes style tips explained'],entertainment:['celebrity unbelievable true story interview','famous people hidden story explained'],product:['useful products problem solving review','product comparison tested worth buying']},
 JP:{all:['実話 驚きの結末 人生 教訓','心理学 人間関係 行動 雑学','お金 節約 投資 知識 意外','知らないと損する 生活の雑学'],story:['実話 衝撃の結末 感動','本当にあった話 人生の教訓','驚きの実話 体験談'],news:['社会問題 わかりやすく解説','実際に起きた 驚きの事件 解説'],relationship:['心理学 人間関係 本音 行動','恋愛心理 男女の違い 解説','人間関係 やってはいけない行動'],money:['お金の知識 節約 貯金','知らないと損する お金の話','投資 経済 初心者 解説'],facts:['身近な科学 驚きの事実','知らない雑学 人体 科学','生活の裏技 本当の理由'],beauty:['美容 科学 肌 ケア 解説','健康習慣 根拠 解説','ファッション 着こなし コツ'],entertainment:['有名人 驚きの実話 インタビュー'],product:['便利グッズ 比較 検証 レビュー']},
@@ -126,31 +124,16 @@ GB:{all:['incredible true story unexpected twist life lesson','psychology human 
 ID:{all:['kisah nyata mengejutkan akhir tak terduga pelajaran hidup','psikologi perilaku manusia hubungan fakta','kebiasaan uang kesalahan keuangan tips','fakta sains kehidupan sehari hari mengejutkan'],story:['kisah nyata viral akhir mengejutkan','kisah inspiratif nyata pelajaran hidup','cerita nyata pengalaman mengejutkan'],news:['fenomena sosial dijelaskan contoh nyata','kejadian nyata unik penjelasan'],relationship:['psikologi hubungan tanda perilaku manusia','psikologi cinta hubungan pasangan','perilaku toxic tanda hubungan'],money:['tips keuangan kesalahan mengelola uang','kebiasaan menabung fakta keuangan','pengetahuan ekonomi sederhana'],facts:['fakta sains tubuh manusia mengejutkan','fakta kehidupan sehari hari','mitos atau fakta penjelasan'],beauty:['fakta perawatan kulit sains','kebiasaan sehat berdasarkan fakta','tips fashion kesalahan gaya'],entertainment:['kisah nyata selebriti wawancara'],product:['review produk bermanfaat perbandingan uji coba']}
 };
 const excludedTitle=/(official music video|lyrics|full album|nightcore|gameplay|walkthrough|movie trailer|song|dance practice|뮤직비디오|가사|게임 플레이|게임 공략|歌詞|公式mv|lirik lagu|full movie)/i;
-function buildQueries(region,topic,custom){const pack=queryPacks[region]?.[topic]||queryPacks[region].all;const visual={US:['caught on camera real footage','real life experiment full video','wildlife rescue field footage'],JP:['現場映像 実際の出来事','実験 検証 実際の映像','動物 救助 現場映像'],KR:['실제 현장 영상 사건 사고','실험 검증 직접 해보기 영상','동물 구조 야생 생태 현장'],GB:['caught on camera real footage','real world experiment full footage','wildlife rescue field documentary'],ID:['rekaman kejadian nyata di lokasi','eksperimen uji coba langsung','penyelamatan hewan rekaman lapangan']};const base=custom?[custom,...pack.slice(0,2)]:pack.slice(0,3);const terms=base.concat(visual[region]||visual.US);return [...new Set(terms.map(x=>x+' -podcast -interview -talkshow -commentary -reaction -explained'))];}
+function buildQueries(region,topic,custom){const pack=queryPacks[region]?.[topic]||queryPacks[region].all;const visual={US:'caught on camera real footage',JP:'現場映像 実際の出来事',KR:'실제 현장 영상 실험 구조',GB:'caught on camera real footage',ID:'rekaman kejadian nyata'};const base=custom?[custom]:[pack[0]];return [...new Set([...base,visual[region]||visual.US].map(x=>x+' -podcast -interview -talkshow -commentary -reaction'))];}
 const regions=['US','JP','KR','GB','ID'];
 const fmt=n=>{n=Number(n||0);if(n>=1e8)return (n/1e8).toFixed(1)+'억';if(n>=1e4)return (n/1e4).toFixed(0)+'만';return n.toLocaleString('ko-KR')};
 function dateAfter(period){if(period==='all')return null;let d=new Date();d.setDate(d.getDate()-(period==='week'?7:period==='month'?30:365));return d.toISOString();}
 function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-async function searchRegion(region,key,q,max,after){
- let url=new URL('https://www.googleapis.com/youtube/v3/search');
- let p={part:'snippet',type:'video',order:'viewCount',regionCode:region,maxResults:max,q:q,key};
- if(after)p.publishedAfter=after;
- url.search=new URLSearchParams(p);
- let r=await fetch(url);let j=await r.json();if(!r.ok)throw new Error(j.error?.message||'YouTube 검색 오류');
- let ids=(j.items||[]).map(x=>x.id.videoId).filter(Boolean);if(!ids.length)return [];
- let vu=new URL('https://www.googleapis.com/youtube/v3/videos');
- vu.search=new URLSearchParams({part:'snippet,statistics,contentDetails',id:ids.join(','),key});
- let vr=await fetch(vu);let vj=await vr.json();if(!vr.ok)throw new Error(vj.error?.message||'통계 조회 오류');
- const items=vj.items||[];
- const channelIds=[...new Set(items.map(v=>v.snippet.channelId).filter(Boolean))];
- let channelStats={};
- if(channelIds.length){
-  const cu=new URL('https://www.googleapis.com/youtube/v3/channels');
-  cu.search=new URLSearchParams({part:'statistics',id:channelIds.join(','),key});
-  const cr=await fetch(cu);const cj=await cr.json();if(!cr.ok)throw new Error(cj.error?.message||'채널 통계 조회 오류');
-  for(const c of (cj.items||[]))channelStats[c.id]=Number(c.statistics.subscriberCount||0);
- }
- return items.map(v=>({id:v.id,title:v.snippet.title,channel:v.snippet.channelTitle,channelId:v.snippet.channelId,subscribers:channelStats[v.snippet.channelId]??null,description:v.snippet.description,published:v.snippet.publishedAt,thumb:v.snippet.thumbnails?.medium?.url||v.snippet.thumbnails?.default?.url,views:Number(v.statistics.viewCount||0),likes:v.statistics.likeCount==null?null:Number(v.statistics.likeCount),comments:v.statistics.commentCount==null?null:Number(v.statistics.commentCount),duration:v.contentDetails.duration,region}));
+async function searchRegion(region,q,max,after){
+ const response=await fetch('/api/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({region,query:q,max_results:max,after})});
+ const data=await response.json();
+ if(!response.ok||!data.ok)throw new Error(data.error||'로컬 검색 엔진 오류');
+ return data.items||[];
 }
 function durationSeconds(iso){const m=String(iso||'').match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);return m?(+m[1]||0)*3600+(+m[2]||0)*60+(+m[3]||0):0;}
 const talkingOnlyPattern=/(podcast|full interview|one[- ]on[- ]one interview|talk show|panel discussion|commentary|explained|explainer|reaction video|watch along|news analysis|talking head|강연|토크쇼|인터뷰|팟캐스트|대담|해설|설명 영상|리액션|뉴스 분석|対談|インタビュー|ポッドキャスト|解説|講義|wawancara|reaksi|penjelasan)/i;
@@ -169,47 +152,33 @@ window.seekPreview=function(id,ratio){const v=videos.find(x=>x.id===id);if(!v)re
 function saveVideo(id){let v=videos.find(x=>x.id===id);if(!v)return;if(!saved.some(x=>x.id===id)){saved.push(v);localStorage.setItem('vf_saved',JSON.stringify(saved));renderSaved();}}
 function renderSaved(){$('savedList').innerHTML=saved.length?saved.map(v=>`<div class="savedrow"><a target="_blank" href="https://www.youtube.com/watch?v=${v.id}">${escapeHtml(v.title)}</a><br><span>${fmt(v.views)} 조회 · ${v.region}</span></div>`).join(''):'저장된 영상이 없습니다.';}
 $('searchBtn').onclick=async()=>{
- let key=$('apiKey').value.trim();if(!key){$('status').textContent='먼저 YouTube Data API 키를 입력해 주세요.';return;}
- localStorage.setItem('vf_api_key',key);let region=$('region').value,selected=region==='ALL'?regions:[region],custom=$('query').value.trim(),topic=$('topic').value,period=$('period').value,max=+$('maxResults').value,min=+$('minViews').value,minSec=+$('minDuration').value,after=dateAfter(period);
- videos=[];$('results').innerHTML='';$('status').textContent='YouTube에서 국가별 영상을 검색하고 실제 통계를 확인하는 중입니다...';
+ let region=$('region').value,selected=region==='ALL'?regions:[region],custom=$('query').value.trim(),topic=$('topic').value,period=$('period').value,max=+$('maxResults').value,min=+$('minViews').value,minSec=+$('minDuration').value,after=dateAfter(period);
+ videos=[];$('results').innerHTML='';$('status').textContent='로컬 yt-dlp 검색 엔진에 연결하는 중...';
  try{
- let completed=0,total=selected.reduce((n,r)=>n+buildQueries(r,topic,custom).length,0);
- for(const r of selected){for(const q of buildQueries(r,topic,custom)){
-  completed++;$('status').textContent=r+' 주제별 발굴 중 ('+completed+'/'+total+') · '+q;
-  let found=await searchRegion(r,key,q,max,after);
-  for(const v of found.filter(v=>v.views>=min&&durationSeconds(v.duration)>=minSec&&!excludedTitle.test(v.title))){
-   const existing=videos.find(x=>x.id===v.id);
-   if(existing){const seen=(existing.regions||[existing.region]);if(!seen.includes(r))existing.regions=[...seen,r];}
-   else{v.regions=[r];videos.push(v);}
-  }
-  render();
- }}
- const scanned=videos.length;
- const eligible=videos.filter(v=>!talkingOnlyPattern.test(v.title)&&(v.subscribers==null||v.subscribers<1000000));
- const strict=eligible.filter(v=>suitability(v).score>=65);
- let filterMode='엄격 선별';
- if(strict.length){videos=strict;}
- else{
-  const relaxed=eligible.filter(v=>suitability(v).score>=45);
-  if(relaxed.length){videos=relaxed;filterMode='완화 선별(45점 이상)';}
-  else if(eligible.length){videos=eligible;filterMode='후보 보존(설명형·대형 채널 제외 후 점수 낮은 후보 포함)';}
-  else{
-   const notMega=videos.filter(v=>v.subscribers==null||v.subscribers<1000000);
-   videos=notMega.length?notMega:videos;
-   filterMode='후보 보존(엄격 제외 조건을 통과한 영상이 없어 원본 후보 표시)';
-  }
- }
- videos.sort((a,b)=>suitability(b).score-suitability(a).score||b.views-a.views);
- $('sort').value='score';render();
- $('status').textContent='발굴 완료: '+selected.join(', ')+' · 검색 후보 '+scanned+'개 중 '+videos.length+'개 표시 · '+filterMode+'. 진행자 설명형은 제목 기준으로 제외 시도하며, 구독자 100만 이상 채널은 우선 제외합니다.';
-}
- catch(e){$('status').textContent='오류: '+e.message+' · API 키, API 활성화, 할당량 및 키 제한 설정을 확인하세요.';}
+  const health=await fetch('/api/health');if(!health.ok)throw new Error('로컬 검색 서버에 연결할 수 없습니다. VIRAL_FINDER_열기.bat으로 실행했는지 확인하세요.');
+  let completed=0,total=selected.reduce((n,r)=>n+buildQueries(r,topic,custom).length,0);
+  for(const r of selected){for(const q of buildQueries(r,topic,custom)){
+   completed++;$('status').textContent=r+' 검색 중 ('+completed+'/'+total+') · '+q;
+   let found=await searchRegion(r,q,max,after);
+   for(const v of found.filter(v=>v.views>=min&&durationSeconds(v.duration)>=minSec&&!excludedTitle.test(v.title))){
+    const existing=videos.find(x=>x.id===v.id);
+    if(existing){const seen=(existing.regions||[existing.region]);if(!seen.includes(r))existing.regions=[...seen,r];}
+    else{v.regions=[r];videos.push(v);}
+   }
+   render();
+  }}
+  const scanned=videos.length,eligible=videos.filter(v=>!talkingOnlyPattern.test(v.title)),strict=eligible.filter(v=>suitability(v).score>=65);
+  let filterMode='엄격 선별';
+  if(strict.length)videos=strict;else{const relaxed=eligible.filter(v=>suitability(v).score>=45);if(relaxed.length){videos=relaxed;filterMode='완화 선별(45점 이상)';}else if(eligible.length){videos=eligible;filterMode='후보 보존';}}
+  videos.sort((a,b)=>suitability(b).score-suitability(a).score||b.views-a.views);$('sort').value='score';render();
+  $('status').textContent='발굴 완료: '+selected.join(', ')+' · 검색 후보 '+scanned+'개 중 '+videos.length+'개 표시 · '+filterMode+'. YouTube API 키와 검색 할당량을 사용하지 않습니다.';
+ }catch(e){$('status').textContent='오류: '+e.message+' · 로컬 서버 실행 및 yt-dlp 설치 상태를 확인하세요.';}
 };
 $('filter').oninput=render;$('sort').onchange=render;
 $('clearBtn').onclick=()=>{videos=[];render();$('status').textContent='검색 결과를 지웠습니다.';};
 $('exportBtn').onclick=()=>{let rows=[['제목','채널','국가','조회수','좋아요','댓글','게시일','URL'],...saved.map(v=>[v.title,v.channel,v.region,v.views,v.likes??'',v.comments??'',v.published,'https://www.youtube.com/watch?v='+v.id])];let csv='\ufeff'+rows.map(r=>r.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='viral_finder_saved.csv';a.click();URL.revokeObjectURL(a.href);};
 
-const APP_VERSION='1.8.2';
+const APP_VERSION='2.0.0';
 const UPDATE_BASE='https://raw.githubusercontent.com/kti6988-jpg/viral-finder-updates/main/';
 let pendingUpdate=null;
 $('checkUpdateBtn').onclick=async()=>{
