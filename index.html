@@ -27,16 +27,16 @@ button{border:0;border-radius:10px;padding:11px 14px;font-weight:700;cursor:poin
 .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
 .toolbar input{max-width:300px}.toolbar select{width:auto;min-width:145px}
 .status{padding:10px 12px;background:#101a2d;border:1px solid var(--line);border-radius:10px;color:var(--muted);font-size:12px;margin:12px 0}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
-.card{background:#121d31;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:grid;grid-template-columns:150px 1fr;min-height:145px}
-.thumb{width:150px;height:100%;min-height:145px;object-fit:cover;background:#202d45}
-.cardbody{padding:12px;min-width:0}.title{font-weight:700;font-size:14px;line-height:1.45;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.meta{color:var(--muted);font-size:11px;margin-bottom:8px}.numbers{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#d8e5fa}.actions{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}.actions a,.actions button{font-size:11px;padding:6px 9px;text-decoration:none;border-radius:7px}
+.grid{display:grid;grid-template-columns:1fr;gap:12px}
+.card{background:#121d31;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:grid;grid-template-columns:minmax(220px,28%) minmax(0,1fr);min-height:190px}
+.thumb{width:100%;height:100%;min-height:190px;max-height:230px;object-fit:cover;background:#202d45}
+.cardbody{padding:15px 18px;min-width:0;display:flex;flex-direction:column;justify-content:center}.title{font-weight:700;font-size:15px;line-height:1.45;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{color:var(--muted);font-size:11px;margin-bottom:8px}.numbers{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:#d8e5fa;margin:7px 0}.scoreline{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:4px}.scorebadge{font-size:18px;font-weight:800;color:#8fe6bd;background:#12382e;border:1px solid #276e57;border-radius:10px;padding:7px 12px}.scorereason{font-size:12px;color:#b9c9e3;line-height:1.5}.actions{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}.actions a,.actions button{font-size:11px;padding:6px 9px;text-decoration:none;border-radius:7px}
 a{color:#91bcff}.empty{padding:48px 20px;text-align:center;color:var(--muted);border:1px dashed #3a4b6a;border-radius:14px}
 .savedrow{padding:10px 0;border-bottom:1px solid var(--line);font-size:12px}.savedrow:last-child{border:0}
 footer{max-width:1500px;margin:0 auto;padding:0 24px 24px;color:var(--muted);font-size:11px}
-@media(max-width:1000px){main{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
-@media(max-width:600px){header{padding:16px}.stats{grid-template-columns:repeat(2,1fr)}main{padding:12px}.card{grid-template-columns:110px 1fr}.thumb{width:110px}}
+@media(max-width:1000px){main{grid-template-columns:1fr}}
+@media(max-width:650px){header{padding:16px}.stats{grid-template-columns:repeat(2,1fr)}main{padding:12px}.card{grid-template-columns:1fr}.thumb{width:100%;height:auto;min-height:0;aspect-ratio:16/9;max-height:none}.cardbody{padding:13px}}
 </style>
 </head>
 <body>
@@ -151,7 +151,7 @@ function render(){
  let list=videos.filter(v=>(v.title+' '+v.channel).toLowerCase().includes(q));
  list.sort((a,b)=>sort==='score'?suitability(b).score-suitability(a).score:sort==='likes'?(b.likes||0)-(a.likes||0):sort==='comments'?(b.comments||0)-(a.comments||0):sort==='newest'?new Date(b.published)-new Date(a.published):b.views-a.views);
  $('count').textContent=list.length;$('maxview').textContent=list.length?fmt(Math.max(...list.map(v=>v.views))):'-';$('regions').textContent=[...new Set(list.flatMap(v=>v.regions||[v.region]))].length||'-';$('threshold').textContent=fmt(+$('minViews').value)+'+';
- $('results').innerHTML=list.length?list.map(v=>{let s=suitability(v);return `<article class="card"><img class="thumb" src="${v.thumb||''}" alt=""><div class="cardbody"><div class="title">${escapeHtml(v.title)}</div><div class="meta">${escapeHtml(v.channel)} · ${(v.regions||[v.region]).join(', ')} · ${new Date(v.published).toLocaleDateString('ko-KR')}</div><div class="numbers"><b>조회 ${fmt(v.views)}</b><span>♥ ${v.likes==null?'비공개':fmt(v.likes)}</span><span>댓글 ${v.comments==null?'비공개':fmt(v.comments)}</span></div><div class="meta" style="margin-top:7px">자막 적합성 참고점수 ${s.score}/100 · ${escapeHtml(s.reason)}</div><div class="actions"><a class="secondary" href="https://www.youtube.com/watch?v=${v.id}" target="_blank">원본 보기 ↗</a><button class="secondary" onclick="saveVideo('${v.id}')">☆ 저장</button></div></div></article>`}).join(''):'<div class="empty" style="grid-column:1/-1">조건에 맞는 영상이 없습니다. 검색어를 넓히거나 조회수 기준을 낮춰보세요.</div>';
+ $('results').innerHTML=list.length?list.map(v=>{let s=suitability(v);return `<article class="card"><img class="thumb" src="${v.thumb||''}" alt=""><div class="cardbody"><div class="title">${escapeHtml(v.title)}</div><div class="meta">${escapeHtml(v.channel)} · ${(v.regions||[v.region]).join(', ')} · ${new Date(v.published).toLocaleDateString('ko-KR')}</div><div class="numbers"><b>조회 ${fmt(v.views)}</b><span>♥ ${v.likes==null?'비공개':fmt(v.likes)}</span><span>댓글 ${v.comments==null?'비공개':fmt(v.comments)}</span></div><div class="scoreline"><span class="scorebadge">${s.score}<small style="font-size:11px;font-weight:600"> / 100점</small></span><span class="scorereason">AI 제목·설명 기반 참고 평가<br>${escapeHtml(s.reason)}</span></div><div class="actions"><a class="secondary" href="https://www.youtube.com/watch?v=${v.id}" target="_blank">원본 보기 ↗</a><button class="secondary" onclick="saveVideo('${v.id}')">☆ 저장</button></div></div></article>`}).join(''):'<div class="empty" style="grid-column:1/-1">조건에 맞는 영상이 없습니다. 검색어를 넓히거나 조회수 기준을 낮춰보세요.</div>';
  renderSaved();
 }
 function saveVideo(id){let v=videos.find(x=>x.id===id);if(!v)return;if(!saved.some(x=>x.id===id)){saved.push(v);localStorage.setItem('vf_saved',JSON.stringify(saved));renderSaved();}}
@@ -183,7 +183,7 @@ $('filter').oninput=render;$('sort').onchange=render;
 $('clearBtn').onclick=()=>{videos=[];render();$('status').textContent='검색 결과를 지웠습니다.';};
 $('exportBtn').onclick=()=>{let rows=[['제목','채널','국가','조회수','좋아요','댓글','게시일','URL'],...saved.map(v=>[v.title,v.channel,v.region,v.views,v.likes??'',v.comments??'',v.published,'https://www.youtube.com/watch?v='+v.id])];let csv='\ufeff'+rows.map(r=>r.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='viral_finder_saved.csv';a.click();URL.revokeObjectURL(a.href);};
 
-const APP_VERSION='1.4.1';
+const APP_VERSION='1.5.0';
 const UPDATE_BASE='https://raw.githubusercontent.com/kti6988-jpg/viral-finder-updates/main/';
 let pendingUpdate=null;
 $('checkUpdateBtn').onclick=async()=>{
