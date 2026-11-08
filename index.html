@@ -43,7 +43,7 @@ footer{max-width:1500px;margin:0 auto;padding:0 24px 24px;color:var(--muted);fon
 <header>
  <div class="brand"><div class="logo">🔥</div><div><h1>VIRAL FINDER</h1><p>YOUTUBE GLOBAL CONTENT DISCOVERY · 로컬 브라우저 앱</p></div></div>
  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-  <span class="pill" id="versionPill">v2.0.0</span>
+  <span class="pill" id="versionPill">v2.0.1</span>
   <button class="secondary" id="checkUpdateBtn" style="font-size:12px">새 버전 확인</button>
   <button class="primary" id="applyUpdateBtn" style="width:auto;margin:0;font-size:12px" disabled>새 버전 적용</button>
  </div>
@@ -107,7 +107,7 @@ footer{max-width:1500px;margin:0 auto;padding:0 24px 24px;color:var(--muted);fon
   <div class="status" id="status">'API 없이 영상 발굴'을 눌러 시작하세요. 로컬 yt-dlp가 공개 메타데이터를 수집합니다.</div>
   <div class="grid" id="results"><div class="empty" style="grid-column:1/-1">아직 검색 결과가 없습니다.<br>API 키를 등록하면 실제 YouTube 영상 후보를 가져옵니다.</div></div>
  </div>
- <div class="status" id="updateStatus" style="margin-top:14px">업데이트 확인 전 · 현재 버전 v2.0.0</div>
+ <div class="status" id="updateStatus" style="margin-top:14px">업데이트 확인 전 · 현재 버전 v2.0.1</div>
  <div class="hint" style="margin:12px 2px">주의: 국가 코드는 해당 국가에서 검색되는 영상의 기준이지 채널 운영자의 국적을 보증하지 않습니다. 진행자 설명·인터뷰형 제목을 강하게 제외하고 현장·실험·행동 단서가 있는 영상을 우선합니다. 공개 API만으로 영상 전체 화면을 분석할 수는 없어 제목·설명 기반 사전 선별입니다.</div>
 </section>
 </main>
@@ -179,7 +179,7 @@ $('filter').oninput=render;$('sort').onchange=render;
 $('clearBtn').onclick=()=>{videos=[];render();$('status').textContent='검색 결과를 지웠습니다.';};
 $('exportBtn').onclick=()=>{let rows=[['제목','채널','국가','조회수','좋아요','댓글','게시일','URL'],...saved.map(v=>[v.title,v.channel,v.region,v.views,v.likes??'',v.comments??'',v.published,'https://www.youtube.com/watch?v='+v.id])];let csv='\ufeff'+rows.map(r=>r.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='viral_finder_saved.csv';a.click();URL.revokeObjectURL(a.href);};
 
-const APP_VERSION='2.0.0';
+const APP_VERSION='2.0.1';
 const UPDATE_BASE='https://raw.githubusercontent.com/kti6988-jpg/viral-finder-updates/main/';
 let pendingUpdate=null;
 $('checkUpdateBtn').onclick=async()=>{
