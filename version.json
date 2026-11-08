@@ -1,17 +1,16 @@
 {
-  "version": "2.0.1",
+  "version": "2.0.2",
   "app": "VIRAL FINDER",
   "platform": "windows",
   "channel": "stable",
   "notes": [
-    "yt-dlp 설치 및 Python 실행 환경 진단 개선",
-    "실행 시 브라우저 자동 열기 보완",
-    "API 없는 로컬 검색 유지"
+    "검색 메타데이터 수집 속도 개선",
+    "영상 발굴 버튼을 설정창 최상단으로 이동",
+    "불필요한 API 키 안내 제거"
   ],
   "files": [
     "index.html",
-    "updater_server.py",
-    "VIRAL_FINDER_열기.bat"
+    "updater_server.py"
   ],
   "updated_at": "2026-11-08"
 }
