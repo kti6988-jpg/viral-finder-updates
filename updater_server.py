@@ -11,8 +11,8 @@ def load_ytdlp():
     try:
         import yt_dlp
         return yt_dlp
-    except ImportError:
-        raise RuntimeError("yt-dlp가 설치되지 않았습니다. VIRAL_FINDER_열기.bat을 다시 실행해 설치하세요.")
+    except Exception as e:
+        raise RuntimeError("현재 서버 Python에서 yt-dlp를 불러오지 못했습니다: " + repr(e))
 
 def search_youtube(query, max_results=10, region="US", after=None):
     import yt_dlp
@@ -54,7 +54,9 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path.split("?",1)[0]=="/api/health":
             try: load_ytdlp(); self.send_json(200,{"ok":True,"engine":"yt-dlp"})
-            except Exception as e: self.send_json(503,{"ok":False,"error":str(e)})
+            except Exception as e:
+                print("HEALTH CHECK ERROR:", repr(e), flush=True)
+                self.send_json(503,{"ok":False,"error":str(e)})
             return
         super().do_GET()
     def do_POST(self):
