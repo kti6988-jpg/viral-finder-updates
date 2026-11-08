@@ -1,0 +1,15 @@
+{
+  "version": "1.2.0",
+  "app": "VIRAL FINDER",
+  "platform": "windows",
+  "channel": "stable",
+  "notes": [
+    "유튜브 검색 결과 중복 제거",
+    "국가별 검색 결과 통합 표시",
+    "한국어 UI 및 저장 데이터 호환"
+  ],
+  "files": [
+    "index.html"
+  ],
+  "updated_at": "2026-11-08"
+}
