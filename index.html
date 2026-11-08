@@ -53,6 +53,7 @@ footer{max-width:1500px;margin:0 auto;padding:0 24px 24px;color:var(--muted);fon
  <section class="panel">
   <h2>🔎 영상 발굴 설정</h2>
   <label>검색 방식</label><div class="status" style="margin:5px 0">로컬 yt-dlp 검색 · YouTube Data API 키 불필요</div><div class="hint">PC의 로컬 검색 엔진이 YouTube 공개 검색 결과와 영상 메타데이터를 수집합니다. 조회수·길이 중심으로 선별하며 좋아요·댓글·구독자 수는 제공되지 않을 수 있습니다.</div>
+  <button class="primary" id="searchBtn">🚀 API 없이 영상 발굴</button>
   <label>검색어 / 소재</label>
   <input id="query" value="" placeholder="선택 입력 · 예: 반전 실화, 심리학, 돈 관련 이야기">
   <label>조사 국가</label>
@@ -71,7 +72,7 @@ footer{max-width:1500px;margin:0 auto;padding:0 24px 24px;color:var(--muted);fon
   <select id="period"><option value="all">전체 기간</option><option value="year">최근 1년</option><option value="month">최근 30일</option><option value="week">최근 7일</option></select>
   <label>검색 결과 수 (검색어별)</label>
   <select id="maxResults"><option>10</option><option selected>25</option><option>50</option></select>
-  <button class="primary" id="searchBtn">🚀 API 없이 영상 발굴</button>
+  
   <div class="hint">검색은 로컬 yt-dlp 엔진을 사용합니다. Google API 키와 일일 Search Queries 할당량을 사용하지 않습니다.</div>
  </section>
  <section class="panel" style="margin-top:14px">
