@@ -27,23 +27,23 @@ button{border:0;border-radius:10px;padding:11px 14px;font-weight:700;cursor:poin
 .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
 .toolbar input{max-width:300px}.toolbar select{width:auto;min-width:145px}
 .status{padding:10px 12px;background:#101a2d;border:1px solid var(--line);border-radius:10px;color:var(--muted);font-size:12px;margin:12px 0}
-.grid{display:grid;grid-template-columns:1fr;gap:12px}
-.card{background:#121d31;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:grid;grid-template-columns:minmax(220px,28%) minmax(0,1fr);min-height:190px}
-.thumb{width:100%;height:100%;min-height:190px;max-height:230px;object-fit:cover;background:#202d45}
-.cardbody{padding:15px 18px;min-width:0;display:flex;flex-direction:column;justify-content:center}.title{font-weight:700;font-size:15px;line-height:1.45;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.meta{color:var(--muted);font-size:11px;margin-bottom:8px}.numbers{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:#d8e5fa;margin:7px 0}.scoreline{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:4px}.scorebadge{font-size:18px;font-weight:800;color:#8fe6bd;background:#12382e;border:1px solid #276e57;border-radius:10px;padding:7px 12px}.scorereason{font-size:12px;color:#b9c9e3;line-height:1.5}.actions{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}.actions a,.actions button{font-size:11px;padding:6px 9px;text-decoration:none;border-radius:7px}
+.grid{display:grid;grid-template-columns:1fr;gap:5px}
+.card{background:#121d31;border:1px solid var(--line);border-radius:8px;overflow:hidden;display:grid;grid-template-columns:120px minmax(0,1fr);min-height:82px;max-height:94px}
+.thumb{width:120px;height:82px;min-height:82px;max-height:94px;object-fit:cover;background:#202d45}
+.cardbody{padding:5px 9px;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto auto;column-gap:10px;align-content:center}.title{font-weight:700;font-size:12px;line-height:1.25;margin-bottom:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{color:var(--muted);font-size:9px;margin-bottom:2px}.numbers{display:flex;gap:9px;flex-wrap:wrap;font-size:10px;color:#d8e5fa;margin:2px 0}.scoreline{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:0;grid-column:2;grid-row:1 / span 3}.scorebadge{font-size:14px;font-weight:800;color:#8fe6bd;background:#12382e;border:1px solid #276e57;border-radius:10px;padding:7px 12px}.scorereason{font-size:9px;color:#b9c9e3;line-height:1.25;max-width:155px}.actions{display:flex;gap:5px;margin-top:2px;flex-wrap:wrap;grid-column:1}.actions a,.actions button{font-size:9px;padding:2px 6px;text-decoration:none;border-radius:5px}
 a{color:#91bcff}.empty{padding:48px 20px;text-align:center;color:var(--muted);border:1px dashed #3a4b6a;border-radius:14px}
 .savedrow{padding:10px 0;border-bottom:1px solid var(--line);font-size:12px}.savedrow:last-child{border:0}
 footer{max-width:1500px;margin:0 auto;padding:0 24px 24px;color:var(--muted);font-size:11px}
 @media(max-width:1000px){main{grid-template-columns:1fr}}
-@media(max-width:650px){header{padding:16px}.stats{grid-template-columns:repeat(2,1fr)}main{padding:12px}.card{grid-template-columns:1fr}.thumb{width:100%;height:auto;min-height:0;aspect-ratio:16/9;max-height:none}.cardbody{padding:13px}}
+@media(max-width:650px){header{padding:16px}.stats{grid-template-columns:repeat(2,1fr)}main{padding:12px}.card{grid-template-columns:100px minmax(0,1fr);min-height:78px;max-height:90px}.thumb{width:100px;height:78px;min-height:78px;max-height:90px}.cardbody{padding:4px 6px;column-gap:4px}.scorereason{display:none}}
 </style>
 </head>
 <body>
 <header>
  <div class="brand"><div class="logo">🔥</div><div><h1>VIRAL FINDER</h1><p>YOUTUBE GLOBAL CONTENT DISCOVERY · 로컬 브라우저 앱</p></div></div>
  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-  <span class="pill" id="versionPill">v1.6.0</span>
+  <span class="pill" id="versionPill">v1.7.0</span>
   <button class="secondary" id="checkUpdateBtn" style="font-size:12px">새 버전 확인</button>
   <button class="primary" id="applyUpdateBtn" style="width:auto;margin:0;font-size:12px" disabled>새 버전 적용</button>
  </div>
@@ -140,7 +140,16 @@ async function searchRegion(region,key,q,max,after){
  let vu=new URL('https://www.googleapis.com/youtube/v3/videos');
  vu.search=new URLSearchParams({part:'snippet,statistics,contentDetails',id:ids.join(','),key});
  let vr=await fetch(vu);let vj=await vr.json();if(!vr.ok)throw new Error(vj.error?.message||'통계 조회 오류');
- return (vj.items||[]).map(v=>({id:v.id,title:v.snippet.title,channel:v.snippet.channelTitle,channelId:v.snippet.channelId,description:v.snippet.description,published:v.snippet.publishedAt,thumb:v.snippet.thumbnails?.medium?.url||v.snippet.thumbnails?.default?.url,views:Number(v.statistics.viewCount||0),likes:v.statistics.likeCount==null?null:Number(v.statistics.likeCount),comments:v.statistics.commentCount==null?null:Number(v.statistics.commentCount),duration:v.contentDetails.duration,region}));
+ const items=vj.items||[];
+ const channelIds=[...new Set(items.map(v=>v.snippet.channelId).filter(Boolean))];
+ let channelStats={};
+ if(channelIds.length){
+  const cu=new URL('https://www.googleapis.com/youtube/v3/channels');
+  cu.search=new URLSearchParams({part:'statistics',id:channelIds.join(','),key});
+  const cr=await fetch(cu);const cj=await cr.json();if(!cr.ok)throw new Error(cj.error?.message||'채널 통계 조회 오류');
+  for(const c of (cj.items||[]))channelStats[c.id]=Number(c.statistics.subscriberCount||0);
+ }
+ return items.map(v=>({id:v.id,title:v.snippet.title,channel:v.snippet.channelTitle,channelId:v.snippet.channelId,subscribers:channelStats[v.snippet.channelId]??null,description:v.snippet.description,published:v.snippet.publishedAt,thumb:v.snippet.thumbnails?.medium?.url||v.snippet.thumbnails?.default?.url,views:Number(v.statistics.viewCount||0),likes:v.statistics.likeCount==null?null:Number(v.statistics.likeCount),comments:v.statistics.commentCount==null?null:Number(v.statistics.commentCount),duration:v.contentDetails.duration,region}));
 }
 function durationSeconds(iso){const m=String(iso||'').match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);return m?(+m[1]||0)*3600+(+m[2]||0)*60+(+m[3]||0):0;}
 const talkingOnlyPattern=/(podcast|full interview|one[- ]on[- ]one interview|talk show|panel discussion|commentary|explained|explainer|reaction video|watch along|news analysis|talking head|강연|토크쇼|인터뷰|팟캐스트|대담|해설|설명 영상|리액션|뉴스 분석|対談|インタビュー|ポッドキャスト|解説|講義|wawancara|reaksi|penjelasan)/i;
@@ -151,7 +160,7 @@ function render(){
  let list=videos.filter(v=>(v.title+' '+v.channel).toLowerCase().includes(q));
  list.sort((a,b)=>sort==='score'?suitability(b).score-suitability(a).score:sort==='likes'?(b.likes||0)-(a.likes||0):sort==='comments'?(b.comments||0)-(a.comments||0):sort==='newest'?new Date(b.published)-new Date(a.published):b.views-a.views);
  $('count').textContent=list.length;$('maxview').textContent=list.length?fmt(Math.max(...list.map(v=>v.views))):'-';$('regions').textContent=[...new Set(list.flatMap(v=>v.regions||[v.region]))].length||'-';$('threshold').textContent=fmt(+$('minViews').value)+'+';
- $('results').innerHTML=list.length?list.map(v=>{let s=suitability(v);return `<article class="card"><img class="thumb" src="${v.thumb||''}" alt=""><div class="cardbody"><div class="title">${escapeHtml(v.title)}</div><div class="meta">${escapeHtml(v.channel)} · ${(v.regions||[v.region]).join(', ')} · ${new Date(v.published).toLocaleDateString('ko-KR')}</div><div class="numbers"><b>조회 ${fmt(v.views)}</b><span>♥ ${v.likes==null?'비공개':fmt(v.likes)}</span><span>댓글 ${v.comments==null?'비공개':fmt(v.comments)}</span></div><div class="scoreline"><span class="scorebadge">${s.score}<small style="font-size:11px;font-weight:600"> / 100점</small></span><span class="scorereason">AI 제목·설명 기반 참고 평가<br>${escapeHtml(s.reason)}</span></div><div class="actions"><a class="secondary" href="https://www.youtube.com/watch?v=${v.id}" target="_blank">원본 보기 ↗</a><button class="secondary" onclick="saveVideo('${v.id}')">☆ 저장</button></div></div></article>`}).join(''):'<div class="empty" style="grid-column:1/-1">조건에 맞는 영상이 없습니다. 검색어를 넓히거나 조회수 기준을 낮춰보세요.</div>';
+ $('results').innerHTML=list.length?list.map(v=>{let s=suitability(v);return `<article class="card"><img class="thumb" src="${v.thumb||''}" alt=""><div class="cardbody"><div class="title">${escapeHtml(v.title)}</div><div class="meta">${escapeHtml(v.channel)} · 구독자 ${v.subscribers==null?'비공개':fmt(v.subscribers)} · ${(v.regions||[v.region]).join(', ')}</div><div class="numbers"><b>조회 ${fmt(v.views)}</b><span>♥ ${v.likes==null?'비공개':fmt(v.likes)}</span><span>댓글 ${v.comments==null?'비공개':fmt(v.comments)}</span></div><div class="scoreline"><span class="scorebadge">${s.score}<small style="font-size:9px;font-weight:600">점</small></span><span class="scorereason">${escapeHtml(s.reason)}</span></div><div class="actions"><a class="secondary" href="https://www.youtube.com/watch?v=${v.id}" target="_blank">원본 보기 ↗</a><button class="secondary" onclick="saveVideo('${v.id}')">☆ 저장</button></div></div></article>`}).join(''):'<div class="empty" style="grid-column:1/-1">조건에 맞는 영상이 없습니다. 검색어를 넓히거나 조회수 기준을 낮춰보세요.</div>';
  renderSaved();
 }
 function saveVideo(id){let v=videos.find(x=>x.id===id);if(!v)return;if(!saved.some(x=>x.id===id)){saved.push(v);localStorage.setItem('vf_saved',JSON.stringify(saved));renderSaved();}}
@@ -172,7 +181,7 @@ $('searchBtn').onclick=async()=>{
   }
   render();
  }}
- videos=videos.filter(v=>suitability(v).score>=65&&!talkingOnlyPattern.test(v.title));
+ videos=videos.filter(v=>suitability(v).score>=65&&!talkingOnlyPattern.test(v.title)&&(v.subscribers==null||v.subscribers<1000000));
  videos.sort((a,b)=>suitability(b).score-suitability(a).score||b.views-a.views);
  $('sort').value='score';render();
  $('status').textContent='발굴 완료: '+selected.join(', ')+' · 주제별 검색 '+total+'회 · 조회수 '+fmt(min)+' 이상, 콘텐츠 적합도 65점 이상 '+videos.length+'개. 적합도 순으로 정렬했습니다.';
@@ -183,7 +192,7 @@ $('filter').oninput=render;$('sort').onchange=render;
 $('clearBtn').onclick=()=>{videos=[];render();$('status').textContent='검색 결과를 지웠습니다.';};
 $('exportBtn').onclick=()=>{let rows=[['제목','채널','국가','조회수','좋아요','댓글','게시일','URL'],...saved.map(v=>[v.title,v.channel,v.region,v.views,v.likes??'',v.comments??'',v.published,'https://www.youtube.com/watch?v='+v.id])];let csv='\ufeff'+rows.map(r=>r.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='viral_finder_saved.csv';a.click();URL.revokeObjectURL(a.href);};
 
-const APP_VERSION='1.6.0';
+const APP_VERSION='1.7.0';
 const UPDATE_BASE='https://raw.githubusercontent.com/kti6988-jpg/viral-finder-updates/main/';
 let pendingUpdate=null;
 $('checkUpdateBtn').onclick=async()=>{
