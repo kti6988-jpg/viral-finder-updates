@@ -43,7 +43,7 @@ footer{max-width:1500px;margin:0 auto;padding:0 24px 24px;color:var(--muted);fon
 <header>
  <div class="brand"><div class="logo">🔥</div><div><h1>VIRAL FINDER</h1><p>YOUTUBE GLOBAL CONTENT DISCOVERY · 로컬 브라우저 앱</p></div></div>
  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-  <span class="pill" id="versionPill">v1.8.1</span>
+  <span class="pill" id="versionPill">v1.8.2</span>
   <button class="secondary" id="checkUpdateBtn" style="font-size:12px">새 버전 확인</button>
   <button class="primary" id="applyUpdateBtn" style="width:auto;margin:0;font-size:12px" disabled>새 버전 적용</button>
  </div>
@@ -164,8 +164,8 @@ function render(){
  $('results').innerHTML=list.length?list.map(v=>{let s=suitability(v),opened=activePreview===v.id,sec=durationSeconds(v.duration);return `<article class="card"><img class="thumb" src="${v.thumb||''}" alt=""><div class="cardbody"><div class="title">${escapeHtml(v.title)}</div><div class="meta">${escapeHtml(v.channel)} · 구독자 ${v.subscribers==null?'비공개':fmt(v.subscribers)} · ${(v.regions||[v.region]).join(', ')}</div><div class="numbers"><b>조회 ${fmt(v.views)}</b><span>♥ ${v.likes==null?'비공개':fmt(v.likes)}</span><span>댓글 ${v.comments==null?'비공개':fmt(v.comments)}</span></div><div class="scoreline"><span class="scorebadge">${s.score}<small style="font-size:9px;font-weight:600">점</small></span><span class="scorereason">${escapeHtml(s.reason)}</span></div><div class="actions"><button class="secondary" onclick="previewVideo('${v.id}')">${opened?'미리보기 닫기':'▶ 미리보기'}</button><a class="secondary" href="https://www.youtube.com/watch?v=${v.id}" target="_blank">원본 보기 ↗</a><button class="secondary" onclick="saveVideo('${v.id}')">☆ 저장</button></div></div>${opened?`<div class="previewbox"><iframe class="previewplayer" src="https://www.youtube.com/embed/${v.id}?start=${activeStart}&rel=0" title="YouTube video preview" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe><div class="previewtools"><b style="font-size:10px;color:#cbd8ed">구간 바로 보기</b><button class="secondary" onclick="seekPreview('${v.id}',0)">처음</button><button class="secondary" onclick="seekPreview('${v.id}',0.25)">25%</button><button class="secondary" onclick="seekPreview('${v.id}',0.5)">50%</button><button class="secondary" onclick="seekPreview('${v.id}',0.75)">75%</button><button class="secondary" onclick="seekPreview('${v.id}',0.9)">90%</button></div><div class="previewhint">영상 길이 ${Math.floor(sec/60)}분 ${sec%60}초 · 구간 버튼은 해당 시점부터 재생을 시작합니다. 일부 영상은 제작자가 외부 사이트 재생을 막아 미리보기가 제한될 수 있습니다.</div></div>`:''}</article>`}).join(''):'<div class="empty" style="grid-column:1/-1">조건에 맞는 영상이 없습니다. 검색어를 넓히거나 조회수 기준을 낮춰보세요.</div>';
  renderSaved();
 }
-function previewVideo(id){if(activePreview===id){activePreview=null;activeStart=0;}else{activePreview=id;activeStart=0;}render();}
-function seekPreview(id,ratio){const v=videos.find(x=>x.id===id);if(!v)return;activePreview=id;activeStart=Math.floor(durationSeconds(v.duration)*ratio);render();}
+window.previewVideo=function(id){if(activePreview===id){activePreview=null;activeStart=0;}else{activePreview=id;activeStart=0;}render();};
+window.seekPreview=function(id,ratio){const v=videos.find(x=>x.id===id);if(!v)return;activePreview=id;activeStart=Math.floor(durationSeconds(v.duration)*ratio);render();};
 function saveVideo(id){let v=videos.find(x=>x.id===id);if(!v)return;if(!saved.some(x=>x.id===id)){saved.push(v);localStorage.setItem('vf_saved',JSON.stringify(saved));renderSaved();}}
 function renderSaved(){$('savedList').innerHTML=saved.length?saved.map(v=>`<div class="savedrow"><a target="_blank" href="https://www.youtube.com/watch?v=${v.id}">${escapeHtml(v.title)}</a><br><span>${fmt(v.views)} 조회 · ${v.region}</span></div>`).join(''):'저장된 영상이 없습니다.';}
 $('searchBtn').onclick=async()=>{
@@ -209,7 +209,7 @@ $('filter').oninput=render;$('sort').onchange=render;
 $('clearBtn').onclick=()=>{videos=[];render();$('status').textContent='검색 결과를 지웠습니다.';};
 $('exportBtn').onclick=()=>{let rows=[['제목','채널','국가','조회수','좋아요','댓글','게시일','URL'],...saved.map(v=>[v.title,v.channel,v.region,v.views,v.likes??'',v.comments??'',v.published,'https://www.youtube.com/watch?v='+v.id])];let csv='\ufeff'+rows.map(r=>r.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='viral_finder_saved.csv';a.click();URL.revokeObjectURL(a.href);};
 
-const APP_VERSION='1.8.1';
+const APP_VERSION='1.8.2';
 const UPDATE_BASE='https://raw.githubusercontent.com/kti6988-jpg/viral-finder-updates/main/';
 let pendingUpdate=null;
 $('checkUpdateBtn').onclick=async()=>{
