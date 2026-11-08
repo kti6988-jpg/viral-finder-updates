@@ -18,7 +18,7 @@ def search_youtube(query, max_results=10, region="US", after=None):
     import yt_dlp
     max_results = max(1, min(int(max_results or 10), 50))
     opts = {"quiet": True, "no_warnings": True, "skip_download": True, "ignoreerrors": True,
-            "extract_flat": False, "playlistend": max_results, "noplaylist": False,
+            "extract_flat": "in_playlist", "playlistend": max_results, "noplaylist": False,
             "geo_bypass": True, "geo_bypass_country": str(region or "US"),
             "socket_timeout": 20, "retries": 1}
     with yt_dlp.YoutubeDL(opts) as ydl:
@@ -91,6 +91,6 @@ class Handler(SimpleHTTPRequestHandler):
         except Exception as e: self.send_json(500,{"ok":False,"error":str(e)})
 
 if __name__=="__main__":
-    print("VIRAL FINDER 2.0.0 server: http://127.0.0.1:8765")
+    print("VIRAL FINDER 2.0.2 server: http://127.0.0.1:8765")
     print("종료하려면 이 창에서 Ctrl+C")
     ThreadingHTTPServer(("127.0.0.1",8765),Handler).serve_forever()
