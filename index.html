@@ -103,7 +103,7 @@ footer{max-width:1500px;margin:0 auto;padding:0 24px 24px;color:var(--muted);fon
    <select id="sort"><option value="score">자막 콘텐츠 적합도 순</option><option value="views">조회수 높은 순</option><option value="likes">좋아요 높은 순</option><option value="comments">댓글 많은 순</option><option value="newest">최신순</option></select>
    <button class="secondary" id="clearBtn">결과 지우기</button>
   </div>
-  <div class="status" id="status">API 키를 입력하고 'YouTube 영상 발굴'을 눌러 시작하세요. 실제 영상 통계만 표시합니다.</div>
+  <div class="status" id="status">'API 없이 영상 발굴'을 눌러 시작하세요. 로컬 yt-dlp가 공개 메타데이터를 수집합니다.</div>
   <div class="grid" id="results"><div class="empty" style="grid-column:1/-1">아직 검색 결과가 없습니다.<br>API 키를 등록하면 실제 YouTube 영상 후보를 가져옵니다.</div></div>
  </div>
  <div class="status" id="updateStatus" style="margin-top:14px">업데이트 확인 전 · 현재 버전 v2.0.0</div>
@@ -135,7 +135,7 @@ async function searchRegion(region,q,max,after){
  if(!response.ok||!data.ok)throw new Error(data.error||'로컬 검색 엔진 오류');
  return data.items||[];
 }
-function durationSeconds(iso){const m=String(iso||'').match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);return m?(+m[1]||0)*3600+(+m[2]||0)*60+(+m[3]||0):0;}
+function durationSeconds(iso){if(typeof iso==='number'&&Number.isFinite(iso))return Math.max(0,iso);const m=String(iso||'').match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);return m?(+m[1]||0)*3600+(+m[2]||0)*60+(+m[3]||0):0;}
 const talkingOnlyPattern=/(podcast|full interview|one[- ]on[- ]one interview|talk show|panel discussion|commentary|explained|explainer|reaction video|watch along|news analysis|talking head|강연|토크쇼|인터뷰|팟캐스트|대담|해설|설명 영상|리액션|뉴스 분석|対談|インタビュー|ポッドキャスト|解説|講義|wawancara|reaksi|penjelasan)/i;
 const visualContentPattern=/(experiment|demonstration|challenge|transformation|before and after|survival|rescue|investigation|documentary|field test|build|making|repair|wildlife|animal|실험|비교|전후|현장|구조|사고|탐험|제작|수리|동물|실화|사건|테스트|검증|実験|検証|挑戦)/i;
 function suitability(v){const t=(v.title+' '+(v.description||'')).toLowerCase(),title=v.title.toLowerCase(),sec=durationSeconds(v.duration);let score=30,reasons=[];if(sec<180)return {score:0,reason:'3분 미만 제외'};if(/실화|사연|실제|반전|사건|이야기|true story|real story|real life|kisah nyata|実話/.test(t)){score+=15;reasons.push('실제 사례·스토리');}if(/심리|행동|관계|연애|psychology|behavior|relationship|dating|心理/.test(t)){score+=12;reasons.push('심리·관계 정보');}if(/돈|경제|재테크|금융|money|finance|economy|お金|投資/.test(t)){score+=12;reasons.push('돈·경제 정보');}if(/과학|상식|사실|이유|science|facts|explained|why|fakta|雑学/.test(t)){score+=12;reasons.push('정보·지식 전달');}if(visualContentPattern.test(t)){score+=35;reasons.push('실제 현장·실험·행동 장면 단서');}else{score-=12;reasons.push('시각적 장면 단서 부족');}if(/충격|소름|반전|놀라운|shocking|unbelievable|unexpected/.test(title)){score+=8;reasons.push('강한 제목 훅');}if((v.description||'').length>250){score+=5;reasons.push('설명 정보 충분');}if(talkingOnlyPattern.test(title)){score-=65;reasons.push('진행자 설명·인터뷰 중심 제목 제외');}if(excludedTitle.test(title)){score-=60;reasons.push('음악·게임·예고편 제외 대상');}if(sec<=1200){score+=10;reasons.push('편집 후보 길이');}else if(sec>3600){score-=8;reasons.push('장시간 원본');}return {score:Math.max(0,Math.min(100,score)),reason:reasons.join(' · ')||'장면 구성 직접 확인 필요'};}
