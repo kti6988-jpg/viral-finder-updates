@@ -1,13 +1,12 @@
 {
-  "version": "2.0.0",
+  "version": "2.0.1",
   "app": "VIRAL FINDER",
   "platform": "windows",
   "channel": "stable",
   "notes": [
-    "YouTube Data API 검색 제거",
-    "로컬 yt-dlp 기반 검색 엔진 도입",
-    "국가별 검색과 영상 조회수·길이 필터 유지",
-    "API 키와 Search Queries 일일 할당량 불필요"
+    "yt-dlp 설치 및 Python 실행 환경 진단 개선",
+    "실행 시 브라우저 자동 열기 보완",
+    "API 없는 로컬 검색 유지"
   ],
   "files": [
     "index.html",
