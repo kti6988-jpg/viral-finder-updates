@@ -1,15 +1,18 @@
 {
-  "version": "1.8.2",
+  "version": "2.0.0",
   "app": "VIRAL FINDER",
   "platform": "windows",
   "channel": "stable",
   "notes": [
-    "검색 결과가 사라지는 현상 완화",
-    "미리보기 버튼 클릭 함수 연결 수정",
-    "영상 구간 미리보기 기능 유지"
+    "YouTube Data API 검색 제거",
+    "로컬 yt-dlp 기반 검색 엔진 도입",
+    "국가별 검색과 영상 조회수·길이 필터 유지",
+    "API 키와 Search Queries 일일 할당량 불필요"
   ],
   "files": [
-    "index.html"
+    "index.html",
+    "updater_server.py",
+    "VIRAL_FINDER_열기.bat"
   ],
   "updated_at": "2026-11-08"
 }
