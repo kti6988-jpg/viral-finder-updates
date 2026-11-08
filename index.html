@@ -51,10 +51,10 @@ footer{max-width:1500px;margin:0 auto;padding:0 24px 24px;color:var(--muted);fon
 <main>
 <aside>
  <section class="panel">
-  <h2>🔎 영상 발굴 설정</h2>
+  <h2>🔎 영상 발굴</h2>
   <label>검색 방식</label><div class="status" style="margin:5px 0">로컬 yt-dlp 검색 · YouTube Data API 키 불필요</div><div class="hint">PC의 로컬 검색 엔진이 YouTube 공개 검색 결과와 영상 메타데이터를 수집합니다. 조회수·길이 중심으로 선별하며 좋아요·댓글·구독자 수는 제공되지 않을 수 있습니다.</div>
-  <button class="primary" id="searchBtn">🚀 API 없이 영상 발굴</button>
-  <label>검색어 / 소재</label>
+  <button class="primary" id="searchBtn" style="margin-top:10px">🚀 영상 발굴 시작</button>
+  <label>키워드 / 소재</label>
   <input id="query" value="" placeholder="선택 입력 · 예: 반전 실화, 심리학, 돈 관련 이야기">
   <label>조사 국가</label>
   <select id="region">
@@ -76,16 +76,6 @@ footer{max-width:1500px;margin:0 auto;padding:0 24px 24px;color:var(--muted);fon
   <div class="hint">검색은 로컬 yt-dlp 엔진을 사용합니다. Google API 키와 일일 Search Queries 할당량을 사용하지 않습니다.</div>
  </section>
  <section class="panel" style="margin-top:14px">
-  <h2>🔑 API 키 발급 방법</h2>
-  <ol class="hint" style="padding-left:18px">
-   <li><a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> 접속</li>
-   <li>프로젝트 생성 후 YouTube Data API v3 사용 설정</li>
-   <li>사용자 인증 정보에서 API 키 생성</li>
-   <li>키를 위 입력란에 붙여넣기</li>
-  </ol>
-  <div class="hint">YouTube Data API는 기본 할당량이 있으며 검색 요청은 할당량을 사용합니다. API 키를 외부에 공유하지 마세요.</div>
- </section>
- <section class="panel" style="margin-top:14px">
   <h2>⭐ 저장한 영상</h2><div id="savedList" class="hint">저장된 영상이 없습니다.</div>
   <button class="secondary" id="exportBtn" style="width:100%;margin-top:10px">저장 목록 CSV 내보내기</button>
  </section>
@@ -104,8 +94,8 @@ footer{max-width:1500px;margin:0 auto;padding:0 24px 24px;color:var(--muted);fon
    <select id="sort"><option value="score">자막 콘텐츠 적합도 순</option><option value="views">조회수 높은 순</option><option value="likes">좋아요 높은 순</option><option value="comments">댓글 많은 순</option><option value="newest">최신순</option></select>
    <button class="secondary" id="clearBtn">결과 지우기</button>
   </div>
-  <div class="status" id="status">'API 없이 영상 발굴'을 눌러 시작하세요. 로컬 yt-dlp가 공개 메타데이터를 수집합니다.</div>
-  <div class="grid" id="results"><div class="empty" style="grid-column:1/-1">아직 검색 결과가 없습니다.<br>API 키를 등록하면 실제 YouTube 영상 후보를 가져옵니다.</div></div>
+  <div class="status" id="status">'API 없이 영상 발굴'을 눌러 시작하세요. 로컬 yt-dlp가 공개 메타데이터를 빠르게 수집합니다.</div>
+  <div class="grid" id="results"><div class="empty" style="grid-column:1/-1">아직 검색 결과가 없습니다.<br>왼쪽 위의 영상 발굴 버튼을 눌러 검색하세요.</div></div>
  </div>
  <div class="status" id="updateStatus" style="margin-top:14px">업데이트 확인 전 · 현재 버전 v2.0.1</div>
  <div class="hint" style="margin:12px 2px">주의: 국가 코드는 해당 국가에서 검색되는 영상의 기준이지 채널 운영자의 국적을 보증하지 않습니다. 진행자 설명·인터뷰형 제목을 강하게 제외하고 현장·실험·행동 단서가 있는 영상을 우선합니다. 공개 API만으로 영상 전체 화면을 분석할 수는 없어 제목·설명 기반 사전 선별입니다.</div>
@@ -154,13 +144,14 @@ function saveVideo(id){let v=videos.find(x=>x.id===id);if(!v)return;if(!saved.so
 function renderSaved(){$('savedList').innerHTML=saved.length?saved.map(v=>`<div class="savedrow"><a target="_blank" href="https://www.youtube.com/watch?v=${v.id}">${escapeHtml(v.title)}</a><br><span>${fmt(v.views)} 조회 · ${v.region}</span></div>`).join(''):'저장된 영상이 없습니다.';}
 $('searchBtn').onclick=async()=>{
  let region=$('region').value,selected=region==='ALL'?regions:[region],custom=$('query').value.trim(),topic=$('topic').value,period=$('period').value,max=+$('maxResults').value,min=+$('minViews').value,minSec=+$('minDuration').value,after=dateAfter(period);
- videos=[];$('results').innerHTML='';$('status').textContent='로컬 yt-dlp 검색 엔진에 연결하는 중...';
+ videos=[];$('results').innerHTML='';$('status').textContent='검색 엔진 연결 중...';
  try{
-  const health=await fetch('/api/health');if(!health.ok)throw new Error('로컬 검색 서버에 연결할 수 없습니다. VIRAL_FINDER_열기.bat으로 실행했는지 확인하세요.');
+  const health=await fetch('/api/health');if(!health.ok){let h={};try{h=await health.json();}catch(_){}throw new Error(h.error||'로컬 검색 서버에 연결할 수 없습니다. VIRAL_FINDER_열기.bat으로 실행했는지 확인하세요.');}
   let completed=0,total=selected.reduce((n,r)=>n+buildQueries(r,topic,custom).length,0);
   for(const r of selected){for(const q of buildQueries(r,topic,custom)){
    completed++;$('status').textContent=r+' 검색 중 ('+completed+'/'+total+') · '+q;
    let found=await searchRegion(r,q,max,after);
+   $('status').textContent=r+' 검색 결과 '+found.length+'개 수신 · 조건에 맞는 영상 선별 중...';
    for(const v of found.filter(v=>v.views>=min&&durationSeconds(v.duration)>=minSec&&!excludedTitle.test(v.title))){
     const existing=videos.find(x=>x.id===v.id);
     if(existing){const seen=(existing.regions||[existing.region]);if(!seen.includes(r))existing.regions=[...seen,r];}
@@ -179,7 +170,7 @@ $('filter').oninput=render;$('sort').onchange=render;
 $('clearBtn').onclick=()=>{videos=[];render();$('status').textContent='검색 결과를 지웠습니다.';};
 $('exportBtn').onclick=()=>{let rows=[['제목','채널','국가','조회수','좋아요','댓글','게시일','URL'],...saved.map(v=>[v.title,v.channel,v.region,v.views,v.likes??'',v.comments??'',v.published,'https://www.youtube.com/watch?v='+v.id])];let csv='\ufeff'+rows.map(r=>r.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='viral_finder_saved.csv';a.click();URL.revokeObjectURL(a.href);};
 
-const APP_VERSION='2.0.1';
+const APP_VERSION='2.0.2';
 const UPDATE_BASE='https://raw.githubusercontent.com/kti6988-jpg/viral-finder-updates/main/';
 let pendingUpdate=null;
 $('checkUpdateBtn').onclick=async()=>{
