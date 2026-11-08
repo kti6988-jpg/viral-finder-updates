@@ -43,7 +43,7 @@ footer{max-width:1500px;margin:0 auto;padding:0 24px 24px;color:var(--muted);fon
 <header>
  <div class="brand"><div class="logo">🔥</div><div><h1>VIRAL FINDER</h1><p>YOUTUBE GLOBAL CONTENT DISCOVERY · 로컬 브라우저 앱</p></div></div>
  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-  <span class="pill" id="versionPill">v1.8.0</span>
+  <span class="pill" id="versionPill">v1.8.1</span>
   <button class="secondary" id="checkUpdateBtn" style="font-size:12px">새 버전 확인</button>
   <button class="primary" id="applyUpdateBtn" style="width:auto;margin:0;font-size:12px" disabled>새 버전 적용</button>
  </div>
@@ -184,10 +184,24 @@ $('searchBtn').onclick=async()=>{
   }
   render();
  }}
- videos=videos.filter(v=>suitability(v).score>=65&&!talkingOnlyPattern.test(v.title)&&(v.subscribers==null||v.subscribers<1000000));
+ const scanned=videos.length;
+ const eligible=videos.filter(v=>!talkingOnlyPattern.test(v.title)&&(v.subscribers==null||v.subscribers<1000000));
+ const strict=eligible.filter(v=>suitability(v).score>=65);
+ let filterMode='엄격 선별';
+ if(strict.length){videos=strict;}
+ else{
+  const relaxed=eligible.filter(v=>suitability(v).score>=45);
+  if(relaxed.length){videos=relaxed;filterMode='완화 선별(45점 이상)';}
+  else if(eligible.length){videos=eligible;filterMode='후보 보존(설명형·대형 채널 제외 후 점수 낮은 후보 포함)';}
+  else{
+   const notMega=videos.filter(v=>v.subscribers==null||v.subscribers<1000000);
+   videos=notMega.length?notMega:videos;
+   filterMode='후보 보존(엄격 제외 조건을 통과한 영상이 없어 원본 후보 표시)';
+  }
+ }
  videos.sort((a,b)=>suitability(b).score-suitability(a).score||b.views-a.views);
  $('sort').value='score';render();
- $('status').textContent='발굴 완료: '+selected.join(', ')+' · 주제별 검색 '+total+'회 · 조회수 '+fmt(min)+' 이상, 콘텐츠 적합도 65점 이상 '+videos.length+'개. 적합도 순으로 정렬했습니다.';
+ $('status').textContent='발굴 완료: '+selected.join(', ')+' · 검색 후보 '+scanned+'개 중 '+videos.length+'개 표시 · '+filterMode+'. 진행자 설명형은 제목 기준으로 제외 시도하며, 구독자 100만 이상 채널은 우선 제외합니다.';
 }
  catch(e){$('status').textContent='오류: '+e.message+' · API 키, API 활성화, 할당량 및 키 제한 설정을 확인하세요.';}
 };
@@ -195,7 +209,7 @@ $('filter').oninput=render;$('sort').onchange=render;
 $('clearBtn').onclick=()=>{videos=[];render();$('status').textContent='검색 결과를 지웠습니다.';};
 $('exportBtn').onclick=()=>{let rows=[['제목','채널','국가','조회수','좋아요','댓글','게시일','URL'],...saved.map(v=>[v.title,v.channel,v.region,v.views,v.likes??'',v.comments??'',v.published,'https://www.youtube.com/watch?v='+v.id])];let csv='\ufeff'+rows.map(r=>r.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='viral_finder_saved.csv';a.click();URL.revokeObjectURL(a.href);};
 
-const APP_VERSION='1.8.0';
+const APP_VERSION='1.8.1';
 const UPDATE_BASE='https://raw.githubusercontent.com/kti6988-jpg/viral-finder-updates/main/';
 let pendingUpdate=null;
 $('checkUpdateBtn').onclick=async()=>{
